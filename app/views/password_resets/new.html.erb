@@ -1,0 +1,20 @@
+<div class="flex min-h-full flex-col mx-auto justify-center px-6 py-12 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <%= image_tag asset_path("ouray-teacher-fund-logo-64.png"), class: "mx-auto h-10 w-auto", alt: "OTF Logo" %>
+    <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+      Forgot Password
+    </h2>
+  </div>
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <%= form_with model: @user, url: password_reset_path, class: "contents" do |form| %>
+      <div class="my-5">
+        <%= form.label :email %>
+        <%= form.email_field :email, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+      </div>
+
+      <div class="inline">
+        <%= form.submit "Send Password Reset Info", class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+</div>
