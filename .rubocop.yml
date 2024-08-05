@@ -1,0 +1,31 @@
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+
+AllCops:
+  Exclude:
+    - '**/db/migrate/*'
+    - '**/Gemfile.lock'
+    - '**/Rakefile'
+    - '**/rails'
+    - '**/vendor/**/*'
+    - '**/spec_helper.rb'
+    - 'node_modules/**/*'
+    - 'bin/*'
+    - 'lib/jumpstart/**/*'
+
+# custom rules
+Layout/ElseAlignment:
+  Enabled: false
+
+Layout/TrailingEmptyLines:
+  Enabled: false
+
+Layout/InitialIndentation:
+  Enabled: false
+
+Lint/UselessAssignment:
+  Enabled: false
+
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: keyword

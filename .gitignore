@@ -54,3 +54,4 @@ yarn-debug.log*
 *~
 ./.overmind.sock
 Procfile.*
+package-lock.json
