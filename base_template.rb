@@ -36,14 +36,13 @@ yarn-debug.log*
 Procfile.*
 CODE
 
+rails_command "importmap:install"
+rails_command "tailwindcss:install"
 rails_command "active_storage:install"
+rails_command "action_text:install"
 rails_command "generate solid_errors:install"
 rails_command "generate solid_queue:install"
 rails_command "solid_cache:install:migrations"
-rails_command "tailwindcss:install"
-
-# not going with importmap for now
-# rails_command "importmap:install"
 
 environment "config.active_job.queue_adapter = :solid_queue", env: "production"
 environment "config.mission_control.jobs.adapters = [ :solid_queue ]", env: "production"
@@ -58,8 +57,8 @@ environment "config.mission_control.jobs.adapters = [ :solid_queue ]", env: "dev
 # using the puma plugin for SolidQueue atm
 append_to_file "config/puma.rb", <<-CODE
 if Rails.env.production?
-  # Allow solid_cache to be restarted with the `bin/rails restart` command.
-  plugin :solid_cache
+  # Allow solid_queue to be restarted with the `bin/rails restart` command.
+  plugin :solid_queue
 end
 CODE
 
@@ -113,7 +112,6 @@ CODE
 rails_command "bundle binstubs rubocop"
 
 after_bundle do
-  copy_file "esbuild.config.js"
   copy_file ".rubocop.yml"
   copy_file ".erb-lint.yml"
   copy_file ".better-html.yml"
@@ -121,8 +119,15 @@ after_bundle do
 
   rails_command "action_text:install"
 
-  # ensure yarns are installed
-  run "yarn install"
+  # pin some base JS packages
+  run 'bin/importmap pin "@hotwired/turbo-rails"'
+  run 'bin/importmap pin "@hotwired/stimulus"'
+  run 'bin/importmap pin "alpinejs"'
+
+  append_to_file "config/importmap.rb", <<-CODE
+    pin_all_from "app/javascript/controllers", under: "controllers"
+    pin_all_from "app/javascript/services", under: "services"
+  CODE
 
   # Make sure Linux is in the Gemfile.lock for deploying
   run "bundle lock --add-platform x86_64-linux"
