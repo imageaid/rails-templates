@@ -22,4 +22,8 @@ class PwaController < ApplicationController
     end
     head :ok
   end
+
+  def offline
+    render layout: "offline"
+  end
 end

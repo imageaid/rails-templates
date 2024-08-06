@@ -82,8 +82,6 @@ inject_into_class("app/models/user.rb", "User", "  extend FriendlyId\n  friendly
 directory "app", force: true
 copy_file "./public/icon-192x192.png"
 copy_file "./public/icon-512x512.png"
-copy_file "./public/offline.html"
-copy_file "./public/offline.webp"
 
 # routes
 route 'root to: "welcome#index"'
@@ -92,6 +90,10 @@ route "resource :login, only: [ :new, :show, :create, :destroy ]"
 route "resource :registration, only: [ :new, :create ]"
 route "resource :password, only: [ :edit, :update ]"
 route "resource :password_reset, only: [ :new, :create, :edit, :update ]"
+route 'get "/offline", to: "pwa#offline", as: :pwa_offline'
+route 'get "service-worker" => "pwa#service_worker", as: :pwa_service_worker'
+route 'get "manifest" => "pwa#manifest", as: :pwa_manifest'
+route 'post "/notifications/subscribe", to: "pwa#subscribe"'
 
 route <<-CODE
   mount SolidErrors::Engine, at: "/solid_errors"
