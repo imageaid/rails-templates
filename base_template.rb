@@ -36,13 +36,26 @@ yarn-debug.log*
 Procfile.*
 CODE
 
+# setup the importmaps and pin some base JS packages
 rails_command "importmap:install"
+run 'bin/importmap pin "@hotwired/turbo-rails"'
+run 'bin/importmap pin "@hotwired/stimulus"'
+run 'bin/importmap pin "alpinejs"'
+
+# setup CSS
 rails_command "tailwindcss:install"
+
+# storage, text, errors, cache and queues
 rails_command "active_storage:install"
 rails_command "action_text:install"
 rails_command "generate solid_errors:install"
 rails_command "generate solid_queue:install"
 rails_command "solid_cache:install:migrations"
+
+append_to_file "config/importmap.rb", <<-CODE
+pin_all_from "app/javascript/controllers", under: "controllers"
+pin_all_from "app/javascript/services", under: "services"
+CODE
 
 environment "config.active_job.queue_adapter = :solid_queue", env: "production"
 environment "config.mission_control.jobs.adapters = [ :solid_queue ]", env: "production"
@@ -109,28 +122,45 @@ Rails.application.config.solid_errors.email_from = "errors@localhost"
 Rails.application.config.solid_errors.email_to = "devs@localhost"
 CODE
 
+append_to_file ".rubocop.yml", <<-CODE
+AllCops:
+  Exclude:
+    - '**/db/migrate/*'
+    - '**/Gemfile.lock'
+    - '**/Rakefile'
+    - '**/rails'
+    - '**/vendor/**/*'
+    - '**/spec_helper.rb'
+    - 'node_modules/**/*'
+    - 'bin/*'
+
+# custom rules
+Layout/ElseAlignment:
+  Enabled: false
+
+Layout/TrailingEmptyLines:
+  Enabled: false
+
+Layout/InitialIndentation:
+  Enabled: false
+
+Lint/UselessAssignment:
+  Enabled: false
+
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: keyword
+
+CODE
+
 rails_command "bundle binstubs rubocop"
 
 after_bundle do
-  copy_file ".rubocop.yml"
-  copy_file ".erb-lint.yml"
-  copy_file ".better-html.yml"
-  copy_file ".ruby-version"
-
-  rails_command "action_text:install"
-
-  # pin some base JS packages
-  run 'bin/importmap pin "@hotwired/turbo-rails"'
-  run 'bin/importmap pin "@hotwired/stimulus"'
-  run 'bin/importmap pin "alpinejs"'
-
-  append_to_file "config/importmap.rb", <<-CODE
-    pin_all_from "app/javascript/controllers", under: "controllers"
-    pin_all_from "app/javascript/services", under: "services"
-  CODE
-
   # Make sure Linux is in the Gemfile.lock for deploying
   run "bundle lock --add-platform x86_64-linux"
+
+  copy_file ".erb-lint.yml"
+  copy_file ".better-html.yml"
 
   # init the git repo
   git :init

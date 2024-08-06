@@ -11,7 +11,6 @@ AllCops:
     - '**/spec_helper.rb'
     - 'node_modules/**/*'
     - 'bin/*'
-    - 'lib/jumpstart/**/*'
 
 # custom rules
 Layout/ElseAlignment:
