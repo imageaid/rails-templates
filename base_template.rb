@@ -79,7 +79,9 @@ generate(:scaffold, "user", "first_name:string:index", "last_name:string:index",
 inject_into_class("app/models/user.rb", "User", "  extend FriendlyId\n  friendly_id :name, use: :slugged\n\n  has_secure_password\n  generates_token_for :password_reset, expires_in: 15.minutes { password_salt&.last(10) }\n  generates_token_for :email_confirmation, expires_in: 24.hours { email }\n\n  normalizes :email, with: -> email { email.strip.downcase }\n\n  enum role: { guest: 0, admin: 1 }\n\n  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }\n")
 
 # copy the base session, registration and password related views and files
-directory "app", force: true 
+directory "app", force: true
+copy_file "./public/icon-192x192.png"
+copy_file "./public/icon-512x512.png"
 
 # routes
 route 'root to: "welcome#index"'
