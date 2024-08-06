@@ -82,6 +82,8 @@ inject_into_class("app/models/user.rb", "User", "  extend FriendlyId\n  friendly
 directory "app", force: true
 copy_file "./public/icon-192x192.png"
 copy_file "./public/icon-512x512.png"
+copy_file "./public/offline.html"
+copy_file "./public/offline.webp"
 
 # routes
 route 'root to: "welcome#index"'
