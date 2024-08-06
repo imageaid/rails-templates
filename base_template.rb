@@ -150,17 +150,36 @@ Lint/UselessAssignment:
 Layout/EndAlignment:
   Enabled: true
   EnforcedStyleAlignWith: keyword
-
 CODE
 
-rails_command "bundle binstubs rubocop"
+create_file ".better-html.yml", ""
+append_to_file ".better-html.yml", <<-CODE
+---
+allow_single_quoted_attributes: false
+allow_unquoted_attributes: false
+CODE
+
+create_file ".erb-lint.yml", ""
+append_to_file ".erb-lint.yml", <<-CODE
+---
+#exclude:
+#  - "**/app/views/**/*"
+
+EnableDefaultLinters: true
+linters:
+  ErbSafety:
+    enabled: true
+    better_html_config: .better-html.yml
+  Rubocop:
+    enabled: true
+    rubocop_config:
+      inherit_from:
+        - .rubocop.yml
+CODE
 
 after_bundle do
   # Make sure Linux is in the Gemfile.lock for deploying
   run "bundle lock --add-platform x86_64-linux"
-
-  copy_file ".erb-lint.yml"
-  copy_file ".better-html.yml"
 
   # init the git repo
   git :init
