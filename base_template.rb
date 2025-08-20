@@ -1,12 +1,13 @@
 gem "friendly_id"
 gem "mission_control-jobs"
 gem "pagy"
+gem "solid_errors", github: "imageaid/solid_errors", branch: "main"
 
 gem_group :development do
   gem "annotaterb"
   gem "erb_lint"
   gem "hotwire-spark"
-  gem "letter_opener_web", "~> 2.0"
+  gem "letter_opener_web"
   gem "rails_services"
 end
 
@@ -38,7 +39,7 @@ else
   create_file "Procfile.dev", ""
   append_to_file "Procfile.dev", <<-CODE
     web: bin/rails s -p 3000 -b 0.0.0.0
-    css: yarn build:css --watch
+    css: bin/rails tailwindcss:watch
     worker: bin/jobs
   CODE
 end
@@ -46,7 +47,7 @@ end
 rails_command "css:install:tailwind"
 rails_command "generate authentication"
 rails_command "generate migration AddFieldsToUsers first_name:string:index last_name:string:index name:string role:integer slug:string:uniq"
-inject_into_class("app/models/user.rb", "User", "  extend FriendlyId\n  friendly_id :name, use: :slugged\n\n  generates_token_for :password_reset, expires_in: 15.minutes { password_salt&.last(10) }\n  generates_token_for :email_confirmation, expires_in: 24.hours { email }\n\n  normalizes :email, with: -> email { email.strip.downcase }\n\n  enum role: { guest: 0, admin: 1 }\n\n  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }\n")
+inject_into_class("app/models/user.rb", "User", "  extend FriendlyId\n  friendly_id :name, use: :slugged\n\n  generates_token_for :password_reset, expires_in: 15.minutes { password_salt&.last(10) }\n  generates_token_for :email_confirmation, expires_in: 24.hours { email }\n\n  normalizes :email_address, with: -> email { email.strip.downcase }\n\n  enum role: { guest: 0, admin: 1 }\n\n  validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }\n")
 
 rails_command "generate annotate_rb:install"
 rails_command "generate friendly_id"
